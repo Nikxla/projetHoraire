@@ -221,6 +221,20 @@ function horaireByStudent($id, $dateDebut, $dateFin)
     }
 }
 
+function getDatesStudent($idStudent)
+{
+    try {
+        $connexion = getConnexion();
+        $request = $connexion->prepare("SELECT DISTINCT horaire.dateDebut, horaire.dateFin FROM horaire WHERE horaire.idGroupe = :idStudent");
+        $request->bindParam(':idStudent', $idStudent, PDO::PARAM_INT);
+        $request->execute();
+
+        return $request->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw $e;
+    }
+}
+
 function getDates($idProf)
 {
     try {

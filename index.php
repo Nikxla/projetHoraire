@@ -7,7 +7,7 @@ if (isset($_POST['student']) && isset($_POST['trimestre'])) {
 
     $array = explode('-', $_POST['student']);
 
-    $dates = getDates($array[1]);
+    $dates = getDatesStudent($array[1]);
 
     $horaires = horaireByStudent($array[0], $dates[$date]['dateDebut'], $dates[$date]['dateFin']);
 
