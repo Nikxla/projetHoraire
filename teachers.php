@@ -1,18 +1,19 @@
 <?php
 require_once 'php/fonction.php';
 
+/* if($_SESSION['logged'] != true){
+    header('location: login.php');
+} */
+
 $professeurs = getProfessors();
+$datesSelection = getDatesProfesseurs();
 
 if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
-    $date = $_POST['trimestre'];
-
     $array = explode('-', $_POST['professor']);
 
-    $dates = getDates($array[0]);
+    $dates = explode('/', $_POST['trimestre']);
 
-    if(count($dates) > $date){
-        $horaires = horaireByProfessor($array[0], $dates[$date]['dateDebut'], $dates[$date]['dateFin']);
-    }
+    $horaires = horaireByProfessor($array[0], $dates[0], $dates[1]);
 
     function displayData($horaires, $i){
         if ($horaires[$i]['nomCours'] == "Trav.Perso.") {
@@ -122,14 +123,21 @@ if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
 <div class="container align-content-center align-items-center text-center mt-5">
     <h2 class="h2-responsive">Liste des professeurs</h2>
     <a href="index.php"> Liste des étudiants</a>
+    <?php
+
+    if($_SESSION['logged'] == true){
+        ?>
+        <br><a href="logout.php" class="btn btn-primary">Déconnexion</a><br>
+        <?php
+    }
+
+    ?>
     <hr>
     <form action="teachers.php" method="post">
         <div class="col-md-8 d-inline-block">
             <select class="mdb-select md-form" id="mySelect" name="professor">
                 <option value="" disabled selected>Choix du professeur</option>
                 <?php
-
-
 
                 for($i = 0; $i < count($professeurs); $i++){
                     ?>
@@ -143,21 +151,23 @@ if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
         <div class="col-md-3 d-inline-block">
             <select class="mdb-select md-form" id="selectTrimestre" name="trimestre">
                 <option value="" disabled selected>Choix de la periode</option>
-                <option value="0">Premier trimestre</option>
-                <option value="1">Deuxième trimestre</option>
-                <option value="2">Troisième trimestre</option>
-                <option value="3">Quatrième trimestre</option>
+                <?php
+
+                for ($i = 0; $i < count($datesSelection); $i++){
+                    ?>
+                    <option value="<?= $datesSelection[$i]['dateDebut'] . '/' . $datesSelection[$i]['dateFin'] ?>"><?= date("d-m-Y", strtotime($datesSelection[$i]['dateDebut'])) . ' - ' . date("d-m-Y", strtotime($datesSelection[$i]['dateFin'])) ?></option>
+                    <?php
+                }
+
+                ?>
             </select>
         </div>
         <input type="submit" id="submit" class="btn blue-gradient" value="Afficher l'horaire">
     </form>
-
     <div id="section-to-print" class="container">
-
-
         <?php
 
-        if (isset($horaires)) {
+        if (isset($horaires) and $horaires != null) {
             ?>
             <br><br>
             <h1><?= $array[1]?></h1>
@@ -179,314 +189,206 @@ if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
                 <tr>
                     <th scope="row" class="border-right border-left">8:15 <br/> - <br/> 9:00</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H1");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H1");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H1");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H1");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H1");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">9:05 <br/> - <br/>  9:50</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H2");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H2");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H2");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H2");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H2");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">10:10 - 10:55</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H3");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H3");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H3");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H3");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H3");
-
                     ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">11:00 - 11:45</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H4");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H4");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H4");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H4");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H4");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">11:50 - 12:35</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H5");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H5");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H5");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H5");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H5");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">12:40 - 13:25</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H6");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H6");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H6");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H6");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H6");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">13:45 - 14:30</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H7");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H7");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H7");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H7");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H7");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">14:35 - 15:20</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H8");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H8");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H8");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H8");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H8");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">15:35 - 16:20</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H9");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H9");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H9");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H9");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H9");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left">16:25 - 17:10</th>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "lundi", "H10");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mardi", "H10");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "mercredi", "H10");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "jeudi", "H10");
-
                         ?></td>
                     <td class="border-right"><?php
-
                         displayHoraire($horaires, "vendredi", "H10");
-
                         ?></td>
                 </tr>
                 <tr>
                     <th scope="row" class="border-right border-left border-bottom">17:15 - 18:00</th>
                     <td class="border-right border-bottom"><?php
-
                         displayHoraire($horaires, "lundi", "H11");
-
                         ?></td>
                     <td class="border-right border-bottom"><?php
-
                         displayHoraire($horaires, "mardi", "H11");
-
                         ?></td>
                     <td class="border-right border-bottom"><?php
-
                         displayHoraire($horaires, "mercredi", "H11");
-
                         ?></td>
-                    <td class="border-right border-bottom"><?php
-
+                    <td class="border-right border-bottom"><?
                         displayHoraire($horaires, "jeudi", "H11");
-
                         ?></td>
                     <td class="border-right border-bottom"><?php
-
                         displayHoraire($horaires, "vendredi", "H11");
-
                         ?></td>
                 </tr>
                 </tbody>
             </table>
             <?php
+        } else {
+            echo '<br/><br/>Aucun cours durant cette periode.';
         }
         ?>
     </div>

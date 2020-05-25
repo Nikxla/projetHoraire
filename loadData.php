@@ -1,7 +1,12 @@
 <?php
 require_once('php/fonction.php');
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 clearDatabase();
+
+ini_set('max_execution_time', 0);
 ?>
 <!doctype>
 <html>
@@ -52,7 +57,34 @@ for($i = 0; $i < $countSheets; $i++){
                     $firstName = $worksheet->getCell('C'.$row)->getValue();
                     $gender = $worksheet->getCell('D'.$row)->getValue();
 
-                    newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, $GroupId);
+                    if($worksheet->getCell('F'.$row)->getValue() != null){
+                        $email = $worksheet->getCell('F'.$row)->getValue();
+
+                        $identifiant = generateRandomString(10);
+                        $password = generateRandomString(10);
+
+                        include_once "PHPMailer/PHPMailer.php";
+                        include_once "PHPMailer/Exception.php";
+
+                        $mail = new PHPMailer();
+                        $mail->setFrom('esig@eduge.ch');
+                        $mail->addAddress($email);
+                        $mail->Subject = "Votre login !";
+                        $mail->isHTML(true);
+                        $mail->Body = "Voici les identifiants pour accéder à votre compte : <br><br>
+                                       Identifiant : $identifiant <br><br>
+                                       Mot de passe : $password";
+
+                        if (!$mail->send()) {
+                            echo 'Mailer Error: '. $mail->ErrorInfo;
+                        } else {
+                            echo 'Message sent!';
+                        }
+                        
+                        newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, $GroupId, $email, $identifiant, $password);
+                    } else {
+                        newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, $GroupId, null, null, null);
+                    }
                 } else {
                     $name = $worksheet->getCell('B'.$row)->getValue();
                     $firstName = $worksheet->getCell('C'.$row)->getValue();
@@ -64,14 +96,18 @@ for($i = 0; $i < $countSheets; $i++){
                     $idGroupe = ifGroupExist($final);
 
                     if($idGroupe == null){
-                        newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, null);
+                        newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, null, null, null, null);
                     } else {
-                        newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, $idGroupe[0]['idGroupe']);
+                        newStudent(ucwords(strtolower($name)), ucwords(strtolower($firstName)), $gender, $idGroupe[0]['idGroupe'], null, null, null);
                     }
                 }
             }
         }
     }
+}
+
+function generateRandomString($length) {
+    return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
 }
 
 $tmpfname = "files/Horaires.xlsx";

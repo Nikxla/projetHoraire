@@ -1,6 +1,10 @@
 <?php
 require_once 'php/fonction.php';
 
+/* if($_SESSION['logged'] != true){
+    header('location: login.php');
+} */
+
 if (isset($_POST['student']) && isset($_POST['trimestre'])) {
     $date = $_POST['trimestre'];
 
@@ -117,6 +121,15 @@ if (isset($_POST['student']) && isset($_POST['trimestre'])) {
 <div class="container align-content-center align-items-center text-center mt-5">
     <h2 class="h2-responsive">Liste des étudiants</h2>
     <a href="teachers.php"> Liste des professeurs</a>
+    <?php
+
+    if(isset($_SESSION['logged']) == true){
+        ?>
+        <br><a href="logout.php" class="btn btn-primary">Déconnexion</a><br>
+        <?php
+    }
+
+    ?>
     <hr>
     <form action="index.php" method="post">
         <div class="col-md-8 d-inline-block">

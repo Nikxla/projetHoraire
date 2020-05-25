@@ -98,13 +98,16 @@ function newGroup($name)
     }
 }
 
-function newStudent($name, $firstName, $gender, $idGroup)
+function newStudent($name, $firstName, $gender, $idGroup, $email, $identifiant, $motdepasse)
 {
     try {
-        $request = getConnexion()->prepare("INSERT INTO `etudiant` (`nomEtudiant`, `prenomEtudiant`, `sexe`, `idGroupe`) VALUES (:name, :firstName, :gender, :idGroup)");
+        $request = getConnexion()->prepare("INSERT INTO `etudiant` (`nomEtudiant`, `prenomEtudiant`, `sexe`, `email`, `identifiant`, `motDePasse`, `idGroupe`) VALUES (:name, :firstName, :gender, :email, :identifiant, :mdp, :idGroup)");
         $request->bindParam('name', $name, PDO::PARAM_STR);
         $request->bindParam('firstName', $firstName, PDO::PARAM_STR);
         $request->bindParam('gender', $gender, PDO::PARAM_STR);
+        $request->bindParam('email', $email, PDO::PARAM_STR);
+        $request->bindParam('identifiant', $identifiant, PDO::PARAM_STR);
+        $request->bindParam('mdp', $motdepasse, PDO::PARAM_STR);
         $request->bindParam('idGroup', $idGroup, PDO::PARAM_INT);
         $request->execute();
     } catch (PDOException $e) {
@@ -273,6 +276,31 @@ function getProfessors()
         $request->execute();
 
         return $request->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw $e;
+    }
+}
+
+function getDatesProfesseurs(){
+    try {
+        $connexion = getConnexion();
+        $request = $connexion->prepare("SELECT DISTINCT dateDebut, dateFin FROM `horaire` ORDER BY `horaire`.`dateDebut` ASC");
+        $request->execute();
+
+        return $request->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw $e;
+    }
+}
+
+function login($identifiant)
+{
+    try {
+        $request = getConnexion()->prepare("SELECT `motDePasse` FROM `etudiant` WHERE identifiant = :identifiant");
+        $request->bindParam(':identifiant', $identifiant, PDO::PARAM_STR);
+        $request->execute();
+
+        return $request->fetch();
     } catch (PDOException $e) {
         throw $e;
     }
