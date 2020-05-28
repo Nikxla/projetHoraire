@@ -256,7 +256,7 @@ function horaireByProfessor($id, $dateDebut, $dateFin)
 {
     try {
         $connexion = getConnexion();
-        $request = $connexion->prepare("SELECT DISTINCT groupe.nomGroupe, horaire.dateDebut, horaire.dateFin, horaire.jour, horaire.heure, professeur.nomProfesseur, cours.nomCours, salle.nomSalle from horaire LEFT JOIN groupe on groupe.idGroupe = horaire.idGroupe LEFT JOIN etudiant on etudiant.idGroupe = groupe.idGroupe LEFT JOIN professeur on professeur.idProfesseur = horaire.idProfesseur LEFT JOIN cours on cours.idCours = horaire.idCours LEFT JOIN salle on salle.idSalle = horaire.idSalle where horaire.idProfesseur = :idProf and horaire.dateDebut = :dateDebut and horaire.dateFin = :dateFin");
+        $request = $connexion->prepare("SELECT DISTINCT groupe.nomGroupe, horaire.dateDebut, horaire.dateFin, horaire.jour, horaire.heure, professeur.nomProfesseur, cours.nomCours, salle.nomSalle from horaire JOIN groupe on groupe.idGroupe = horaire.idGroupe JOIN etudiant on etudiant.idGroupe = groupe.idGroupe JOIN professeur on professeur.idProfesseur = horaire.idProfesseur JOIN cours on cours.idCours = horaire.idCours JOIN salle on salle.idSalle = horaire.idSalle where horaire.idProfesseur = :idProf AND ((horaire.dateDebut BETWEEN :dateDebut AND :dateFin) OR (horaire.dateFin BETWEEN :dateDebut AND :dateFin) OR (horaire.dateDebut < :dateDebut AND horaire.dateFin > :dateFin))");
         $request->bindParam(':idProf', $id, PDO::PARAM_INT);
         $request->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR);
         $request->bindParam(':dateFin', $dateFin, PDO::PARAM_STR);
@@ -284,7 +284,7 @@ function getProfessors()
 function getDatesProfesseurs(){
     try {
         $connexion = getConnexion();
-        $request = $connexion->prepare("SELECT DISTINCT dateDebut, dateFin FROM `horaire` ORDER BY `horaire`.`dateDebut` ASC");
+        $request = $connexion->prepare("SELECT DISTINCT dateDebutPeriode, dateFinPeriode FROM `periode` ORDER BY `periode`.`dateDebutPeriode` ASC");
         $request->execute();
 
         return $request->fetchAll(PDO::FETCH_ASSOC);

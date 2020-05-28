@@ -125,7 +125,7 @@ if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
     <a href="index.php"> Liste des étudiants</a>
     <?php
 
-    if($_SESSION['logged'] == true){
+    if(isset($_SESSION['logged']) == true){
         ?>
         <br><a href="logout.php" class="btn btn-primary">Déconnexion</a><br>
         <?php
@@ -155,7 +155,7 @@ if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
 
                 for ($i = 0; $i < count($datesSelection); $i++){
                     ?>
-                    <option value="<?= $datesSelection[$i]['dateDebut'] . '/' . $datesSelection[$i]['dateFin'] ?>"><?= date("d-m-Y", strtotime($datesSelection[$i]['dateDebut'])) . ' - ' . date("d-m-Y", strtotime($datesSelection[$i]['dateFin'])) ?></option>
+                    <option value="<?= $datesSelection[$i]['dateDebutPeriode'] . '/' . $datesSelection[$i]['dateFinPeriode'] ?>"><?= date("d-m-Y", strtotime($datesSelection[$i]['dateDebutPeriode'])) . ' - ' . date("d-m-Y", strtotime($datesSelection[$i]['dateFinPeriode'])) ?></option>
                     <?php
                 }
 
@@ -171,8 +171,8 @@ if (isset($_POST['professor']) && isset($_POST['trimestre'])) {
             ?>
             <br><br>
             <h1><?= $array[1]?></h1>
-            <h6 class="font-italic">Date de début : <?= date("d-m-Y", strtotime($horaires[0]['dateDebut'])) ?> | Date de
-                fin : <?= date("d-m-Y", strtotime($horaires[0]['dateFin'])) ?> </h6>
+            <h6 class="font-italic">Date de début : <?= date("d-m-Y", strtotime($dates[0])) ?> | Date de
+                fin : <?= date("d-m-Y", strtotime($dates[1])) ?> </h6>
 
             <table class="table table-striped text-center my-5">
                 <thead>
